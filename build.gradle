@@ -1,8 +1,10 @@
 plugins {
+	id 'eclipse'
+    id 'idea'
     id 'org.springframework.boot' version '2.6.6'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
-    id 'war'
+    // id 'war'
 }
 
 group = 'com.coders'
@@ -15,6 +17,19 @@ configurations {
     }
 }
 
+sourceSets {
+    main {
+         java {
+            srcDirs = ['src/main/java']
+         }
+    }
+    test {
+        java {
+            srcDirs = ['src/test/java']
+        }
+    }
+}
+
 repositories {
     mavenCentral()
 }
@@ -24,10 +39,24 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
-    providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+    // providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+// Set jar task to disabled. Because jar task is basically executed starting with spring boot plug-in version 2.5 or higher.
+// Reference: https://docs.spring.io/spring-boot/docs/current/gradle-plugin/reference/htmlsingle/
+tasks.named("jar") {
+	enabled = false
+}
+
+tasks.named("bootRun") {
+	mainClass = 'com.coders.laundry.LaundryApplication'
+}
+
+tasks.named("bootJar") {
+	mainClass = 'com.coders.laundry.LaundryApplication'
 }
