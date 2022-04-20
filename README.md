@@ -1,4 +1,4 @@
-# Laundry_Platform
+# Laundry_Platform - Core Server
 
 **Project Spec**
 1. JDK version : 17.0.2
