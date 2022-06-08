@@ -20,6 +20,10 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf:2.6.6'
     implementation 'org.springframework.boot:spring-boot-starter-web:2.6.6'
     implementation 'org.springframework.boot:spring-boot-starter-jdbc:2.6.6'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    // MyBatis
+    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.2.2'
 
     // H2
     runtimeOnly 'com.h2database:h2:2.1.212'
@@ -27,8 +31,6 @@ dependencies {
     // Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
-    // providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
 configurations {
