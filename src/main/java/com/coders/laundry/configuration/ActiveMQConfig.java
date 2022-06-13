@@ -38,6 +38,7 @@ public class ActiveMQConfig {
     FixedBackOff backOff = new FixedBackOff();
     backOff.setMaxAttempts(5);
     backOff.setInterval(2500L);
+    backOff.setInterval(5L);
     factory.setBackOff(backOff);
     factory.setConnectionFactory(connectionFactory());
     factory.setConcurrency("1"); // 리스너들이 컨슘할때 사용할 세션갯수, 3-5 : 최소 3개~최대 5개
