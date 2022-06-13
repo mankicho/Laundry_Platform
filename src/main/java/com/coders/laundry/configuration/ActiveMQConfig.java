@@ -7,6 +7,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.util.backoff.BackOff;
+import org.springframework.util.backoff.FixedBackOff;
 
 @Configuration
 public class ActiveMQConfig {
@@ -31,6 +33,10 @@ public class ActiveMQConfig {
   @Bean
   public DefaultJmsListenerContainerFactory jmsListenerContainerFactory() {
     DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
+    FixedBackOff backOff = new FixedBackOff();
+    backOff.setMaxAttempts(5);
+    backOff.setInterval(5L);
+    factory.setBackOff(backOff);
     factory.setConnectionFactory(connectionFactory());
     factory.setConcurrency("1"); // 리스너들이 컨슘할때 사용할 세션갯수, 3-5 : 최소 3개~최대 5개
     return factory;
