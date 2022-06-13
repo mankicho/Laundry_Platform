@@ -36,6 +36,11 @@ dependencies {
     // https://mvnrepository.com/artifact/org.springframework/spring-jms
     implementation group: 'org.springframework', name: 'spring-jms', version: '5.3.20'
 
+    // https://mvnrepository.com/artifact/org.apache.activemq/activemq-core
+    implementation group: 'org.apache.activemq', name: 'activemq-core', version: '5.7.0'
+    // https://mvnrepository.com/artifact/org.springframework/spring-jms
+    implementation group: 'org.springframework', name: 'spring-jms', version: '5.3.20'
+
     // Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
@@ -54,6 +59,19 @@ dependencies {
 configurations {
     compileOnly {
         extendsFrom annotationProcessor
+    }
+}
+
+sourceSets {
+    main {
+         java {
+            srcDirs = ['src/main/java']
+         }
+    }
+    test {
+        java {
+            srcDirs = ['src/test/java']
+        }
     }
 }
 
