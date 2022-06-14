@@ -6,4 +6,14 @@
                birthday, gender, auto_login_yn, join_date
           FROM member;
     </select>
+
+    <insert
+      id="create"
+      parameterType="MemberEntity"
+      useGeneratedKeys="true"
+      keyProperty="memberId"
+      keyColumn="member_id">
+        INSERT INTO member (phone_num, password, nickname, birthday, gender)
+        VALUES (#{phone_num}, #{password}, #{nickname}, #{birthday}, #{gender});
+    </insert>
 </mapper>
