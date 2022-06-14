@@ -11,4 +11,8 @@ import java.util.List;
 public interface HomeRepository {
 
     List<MemberEntity> selectAllTeamMemberList();
+
+    MemberEntity selectById(int key);
+
+    int create(MemberEntity memberEntity);
 }
