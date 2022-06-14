@@ -1,6 +1,7 @@
 package com.coders.laundry.controller;
 
 import com.coders.laundry.domain.entity.MemberEntity;
+import com.coders.laundry.repository.BoardRepository;
 import com.coders.laundry.service.BoardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -11,9 +12,11 @@ import java.util.List;
 
 @Controller
 public class BoardController {
+    private final BoardService boardService;
 
-    @Autowired
-    private BoardService boardService;
+    public BoardController(BoardService boardService){
+        this.boardService = boardService;
+    }
 
     @GetMapping("/board")
     public String board(Model model) {

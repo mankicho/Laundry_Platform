@@ -6,9 +6,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class BoardService {
+    private final BoardRepository boardRepository;
 
-    @Autowired
-    BoardRepository boardRepository;
-
-    // todo. operate
+    public BoardService(BoardRepository boardRepository){
+        this.boardRepository = boardRepository;
+    }
 }
