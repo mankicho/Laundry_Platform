@@ -1,10 +1,13 @@
 package com.coders.laundry.domain.entity;
 
+import lombok.Builder;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
+@Builder
 public class ReviewEntity {
     private int reviewId;
     private int laundryId;
@@ -14,5 +17,5 @@ public class ReviewEntity {
     private LocalDateTime createDate;
     private int likeNum;
     private LocalDateTime updateDate;
-    private LocalDateTime deleteDate;
+    private LocalDate deleteDate;
 }

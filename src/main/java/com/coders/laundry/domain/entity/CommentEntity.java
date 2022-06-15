@@ -1,10 +1,13 @@
 package com.coders.laundry.domain.entity;
 
+import lombok.Builder;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
+@Builder
 public class CommentEntity {
     private int commentId;
     private int postId;
@@ -13,5 +16,5 @@ public class CommentEntity {
     private LocalDateTime createDate;
     private int likeNum;
     private LocalDateTime updateDate;
-    private LocalDateTime deleteDate;
+    private LocalDate deleteDate;
 }
