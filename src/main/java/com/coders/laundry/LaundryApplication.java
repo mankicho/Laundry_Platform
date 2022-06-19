@@ -1,5 +1,6 @@
 package com.coders.laundry;
 
+import com.coders.laundry.data.DataCreator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -8,6 +9,8 @@ public class LaundryApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(LaundryApplication.class, args);
+        DataCreator creator = new DataCreator();
+        creator.dataCreate();
     }
 
 }
