@@ -6,7 +6,6 @@
             useGeneratedKeys="true"
             keyProperty="laundryId"
             keyColumn="laundry_id">
-
         INSERT INTO laundry (
                name, jibun_address, jibun_address_detail,
                doro_address, doro_address_detail,
@@ -25,4 +24,30 @@
           FROM laundry
          WHERE laundry_id = ${laundryId};
     </select>
+
+    <update id="update"
+            parameterType="LaundryEntity"
+            useGeneratedKeys="true"
+            keyProperty="laundryId"
+            keyColumn="laundry_id">
+        UPDATE laundry
+           SET name = #{name},
+               jibun_address = #{jibunAddress},
+               jibun_address_detail = #{jibunAddressDetail},
+               doro_address = #{doroAddress},
+               doro_address_detail = #{doroAddressDetail},
+               latitude = #{latitude},
+               longitude = #{longitude},
+               partnership = #{partnership}
+         WHERE laundry_id = #{laundryId}
+    </update>
+
+    <delete id="delete"
+            parameterType="int">
+        DELETE
+          FROM laundry
+         WHERE laundry_id = ${laundryId}
+    </delete>
+
+
 </mapper>

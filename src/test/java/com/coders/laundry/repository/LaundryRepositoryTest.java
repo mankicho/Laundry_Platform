@@ -6,8 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("dev")
@@ -57,5 +56,54 @@ class LaundryRepositoryTest {
         assertEquals(37.4790788271, result.getLatitude());
         assertEquals(127.048425603, result.getLongitude());
         assertTrue(result.isPartnership());
+    }
+
+    @Test
+    void update() {
+        // Arrange
+        LaundryEntity laundry = laundryRepository.selectById(1);
+
+        // Pre-setting that laundry's partnership is true
+        laundry.setPartnership(false);
+
+        // And update laundry's partnership to false
+        laundry.setPartnership(false);
+
+        // Act
+        // * this method will be return updated row count
+        int result = laundryRepository.update(laundry);
+
+        // Assert
+        assertEquals(1, result);
+        assertFalse(laundry.isPartnership());
+    }
+
+    @Test
+    void delete() {
+        // Arrange
+        LaundryEntity laundry = LaundryEntity.builder()
+                .name("테스트 빨래방")
+                .jibunAddress("양재동 17-21")
+                .jibunAddressDetail("1층")
+                .doroAddress("서울 서초구 강남대로30길 28")
+                .doroAddressDetail("1층")
+                .latitude(37.4820556875)
+                .longitude(127.0388680845)
+                .partnership(false)
+                .build();
+
+        int insertedCount = laundryRepository.insert(laundry);
+        assertEquals(1, insertedCount);
+
+        int generatedLaundryId = laundry.getLaundryId();
+
+        // Act
+        // * this method will be return updated row count
+        int result = laundryRepository.delete(generatedLaundryId);
+
+        // Assert
+        assertEquals(1, result);
+        LaundryEntity deleted = laundryRepository.selectById(generatedLaundryId);
+        assertNull(deleted);
     }
 }
