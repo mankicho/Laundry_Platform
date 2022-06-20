@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -105,5 +107,14 @@ class LaundryRepositoryTest {
         assertEquals(1, result);
         LaundryEntity deleted = laundryRepository.selectById(generatedLaundryId);
         assertNull(deleted);
+    }
+
+    @Test
+    void selectAll() {
+        // Act
+        List<LaundryEntity> result = laundryRepository.selectAll();
+
+        // Assert
+        assertNotNull(result);
     }
 }

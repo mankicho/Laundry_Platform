@@ -49,5 +49,10 @@
          WHERE laundry_id = ${laundryId}
     </delete>
 
-
+    <select id="selectAll" resultType="LaundryEntity">
+        SELECT laundry_id, name, jibun_address, jibun_address_detail,
+               doro_address, doro_address_detail,
+               latitude, longitude, partnership
+          FROM laundry
+    </select>
 </mapper>
