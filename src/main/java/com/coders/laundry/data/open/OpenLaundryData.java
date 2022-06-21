@@ -1,21 +1,34 @@
 package com.coders.laundry.data.open;
 
-import com.coders.laundry.jackson.StringLowerCaseDeserializer;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 
 @Data
-@JsonDeserialize(using = StringLowerCaseDeserializer.class)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class OpenLaundryData {
 
-  private String sigunNm;
-  private String bizplcNm;
-  private String refineRoadnmAddr;
-  private String refineLotnoAddr;
-  private String bsnStateNm;
-  private String refineWgs84Lat;
-  private String refineWgs84Logt;
+    @JsonAlias("SIGUN_NM")
+    private String sigunNm;
+
+    @JsonAlias("BIZPLC_NM")
+    private String bizplcNm;
+
+    @JsonAlias("REFINE_ROADNM_ADDR")
+    private String refineRoadnmAddr;
+
+    @JsonAlias("REFINE_LOTNO_ADDR")
+    private String refineLotnoAddr;
+
+    @JsonAlias("BSN_STATE_NM")
+    private String bsnStateNm;
+
+    @JsonAlias("REFINE_WGS84_LAT")
+    private String refineWgs84Lat;
+
+    @JsonAlias("REFINE_WGS84_LOGT")
+    private String refineWgs84Logt;
 }
 
 /*

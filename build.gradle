@@ -21,8 +21,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web:2.6.6'
     implementation 'org.springframework.boot:spring-boot-starter-jdbc:2.6.6'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    // https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-guava
-    implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-guava', version: '2.13.3'
 
     // MyBatis
     implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.2.2'
