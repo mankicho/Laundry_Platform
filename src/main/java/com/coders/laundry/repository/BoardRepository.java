@@ -11,6 +11,7 @@ import java.util.List;
 @Mapper
 @Repository
 public interface BoardRepository {
-    List<CategoryEntity> selectAllCategory();
+    List<CategoryEntity> categoryList();
     List<PostEntity> selectHotPost();
+    //List<PostEntity> selectSpecificCategoryPost(int categoryId);
 }

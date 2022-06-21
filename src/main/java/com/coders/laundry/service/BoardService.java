@@ -10,19 +10,19 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-//@RequiredArgsConstructor
+@RequiredArgsConstructor
 public class BoardService {
     private final BoardRepository boardRepository;
 
-    public BoardService(BoardRepository boardRepository){
-        this.boardRepository = boardRepository;
+    public List<CategoryEntity> categoryList() {
+        return boardRepository.categoryList();
     }
 
-    public List<CategoryEntity> findAllCategory(){
-        return boardRepository.selectAllCategory();
-    }
-
-    public List<PostEntity> findHotPost(){
+    public List<PostEntity> findHotPost() {
         return boardRepository.selectHotPost();
     }
+
+//    public List<PostEntity> findSpecificCategoryPost(int categoryId) {
+//        return boardRepository.selectSpecificCategoryPost(categoryId);
+//    }
 }

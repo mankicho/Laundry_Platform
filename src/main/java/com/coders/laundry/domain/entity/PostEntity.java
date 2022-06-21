@@ -16,4 +16,5 @@ public class PostEntity {
     private LocalDateTime createDate;
     private int likeNum;
     private LocalDateTime updateDate;
+
 }
