@@ -1,92 +1,85 @@
 package com.coders.laundry.data;
 
 import com.coders.laundry.data.open.OpenLaundryData;
-import com.coders.laundry.util.StringUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.EventListener;
+import org.springframework.core.io.Resource;
+import org.springframework.stereotype.Component;
+
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@Component
+@RequiredArgsConstructor
 public class DataCreator {
 
-  private final ObjectMapper mapper = new ObjectMapper();
+    @Value("${data.laundry}")
+    private Resource[] rawLaundryDataList;
 
-  public void dataCreate() {
-    try {
-      laundryDataCreate();
-    } catch (Exception e) {
-      log.error(e.getMessage(), e);
+    @Autowired
+    private final ObjectMapper mapper;
+
+    @EventListener
+    public void onApplicationEvent(ContextRefreshedEvent event) {
+        for (Resource r : rawLaundryDataList) {
+            try {
+                laundryDataCreate(r.getFile().getPath());
+            } catch (IOException e) {
+                log.error(e.getMessage(), e);
+            }
+        }
     }
-  }
 
-  private void laundryDataCreate() throws IOException {
-    File file = new File("src/main/resources/db/h2/file/laundry.json");
-    File file2 = new File("src/main/resources/db/h2/file/laundry2.json");
-    BufferedReader br = new BufferedReader(new FileReader(file));
-    BufferedReader br2 = new BufferedReader(new FileReader(file2));
+    private void laundryDataCreate(String rawDataFilePath) throws IOException {
+        String fileContent = Files.readString(Paths.get(rawDataFilePath));
+        OpenLaundryData[] openLaundryDataList = mapper.readValue(fileContent, OpenLaundryData[].class);
 
-    String line;
+        String query = """
+                INSERT INTO laundry (name, jibun_address, doro_address, latitude, longitude, partnership)
+                values (?, ?, ?, ?, ?, ?)
+                """;
 
-    StringBuilder builder = new StringBuilder();
-    StringBuilder builder2 = new StringBuilder();
-    while ((line = br.readLine()) != null) {
-      builder.append(line);
+        query(openLaundryDataList, query);
     }
-    br.close();
 
-    while((line = br2.readLine()) != null) {
-      builder2.append(line);
+    private void query(OpenLaundryData[] openLaundryDataList, String query) {
+        try {
+            String url = "jdbc:h2:mem:test;MODE=MYSQL;DATABASE_TO_LOWER=TRUE";
+            String user = "sa";
+            String password = "";
+            Connection con = DriverManager.getConnection(url, user, password);
+            PreparedStatement statement = con.prepareStatement(query);
+
+            for (OpenLaundryData data : openLaundryDataList) {
+                if (data.getRefineWgs84Lat().isBlank()
+                        || data.getRefineWgs84Logt().isBlank()
+                        || "폐업".equals(data.getBsnStateNm())) {
+                    continue;
+                }
+
+                statement.setString(1, data.getBizplcNm());
+                statement.setString(2, data.getRefineLotnoAddr());
+                statement.setString(3, data.getRefineRoadnmAddr());
+                statement.setBigDecimal(4, new BigDecimal(data.getRefineWgs84Lat()));
+                statement.setBigDecimal(5, new BigDecimal(data.getRefineWgs84Logt()));
+                statement.setBoolean(6, true);
+
+                statement.execute();
+            }
+        } catch (SQLException e) {
+            log.error(e.getMessage(), e);
+        }
     }
-    br2.close();
-
-    OpenLaundryData[] openLaundryDatas = mapper.readValue(builder.toString(), OpenLaundryData[].class);
-    OpenLaundryData[] openLaundryDatas2 = mapper.readValue(builder2.toString(), OpenLaundryData[].class);
-
-    String query = """
-        INSERT INTO laundry (name, jibun_address, doro_address, latitude, longitude, partnership)
-        values (?, ?, ?, ?, ?, ?)
-        """;
-
-    query(openLaundryDatas, query);
-    query(openLaundryDatas2, query);
-  }
-
-  private boolean query(OpenLaundryData[] openLaundryDatas, String query) {
-   try {
-     String url = "jdbc:h2:mem:test;MODE=MYSQL;DATABASE_TO_LOWER=TRUE";
-     String user = "sa";
-     String password = "";
-     Connection con = DriverManager.getConnection(url, user, password);
-     PreparedStatement statement = con.prepareStatement(query);
-
-     for (OpenLaundryData data : openLaundryDatas) {
-       if (StringUtils.isBlank(data.getRefineWgs84Lat())
-           || StringUtils.isBlank(data.getRefineWgs84Logt())
-           || "폐업".equals(data.getBsnStateNm())) {
-         continue;
-       }
-
-       statement.setString(1, data.getBizplcNm());
-       statement.setString(2, data.getRefineLotnoAddr());
-       statement.setString(3, data.getRefineRoadnmAddr());
-       statement.setBigDecimal(4, new BigDecimal(data.getRefineWgs84Lat()));
-       statement.setBigDecimal(5, new BigDecimal(data.getRefineWgs84Logt()));
-       statement.setBoolean(6, true);
-
-       statement.execute();
-     }
-     return true;
-   } catch (SQLException e) {
-     log.error(e.getMessage(), e);
-   }
-    return false;
-  }
 }
