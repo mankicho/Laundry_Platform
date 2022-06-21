@@ -7,7 +7,7 @@ server:
 # Spring settings
 spring:
   profiles:
-    active: prod
+    active: dev
   datasource:
     url: jdbc:h2:mem:test;MODE=MYSQL;DATABASE_TO_LOWER=TRUE;
     driverClassName: org.h2.Driver
@@ -22,8 +22,13 @@ spring:
       path: /h2-console
       settings:
         web-allow-others: true
+
 # Logging settings
 logging:
   level:
     root: info
+
+# data
+data:
+  laundry: classpath:data/laundry*.json
 
