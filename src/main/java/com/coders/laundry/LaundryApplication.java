@@ -9,8 +9,6 @@ public class LaundryApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(LaundryApplication.class, args);
-        DataCreator creator = new DataCreator();
-        creator.dataCreate();
     }
 
 }

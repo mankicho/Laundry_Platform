@@ -2,8 +2,14 @@ package com.coders.laundry.data;
 
 import com.coders.laundry.data.open.OpenLaundryData;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.EventListener;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -15,11 +21,15 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 @Slf4j
+@Component
+@RequiredArgsConstructor
 public class DataCreator {
 
-  private final ObjectMapper mapper = new ObjectMapper();
+  @Autowired
+  private final ObjectMapper mapper;
 
-  public void dataCreate() {
+  @EventListener
+  public void onApplicationEvent(ContextRefreshedEvent event) {
     try {
       laundryDataCreate();
     } catch (Exception e) {
