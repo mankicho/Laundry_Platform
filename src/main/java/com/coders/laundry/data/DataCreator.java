@@ -1,8 +1,9 @@
 package com.coders.laundry.data;
 
 import com.coders.laundry.data.open.OpenLaundryData;
-import com.coders.laundry.util.StringUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -12,7 +13,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class DataCreator {
@@ -68,8 +68,8 @@ public class DataCreator {
      PreparedStatement statement = con.prepareStatement(query);
 
      for (OpenLaundryData data : openLaundryDatas) {
-       if (StringUtils.isBlank(data.getRefineWgs84Lat())
-           || StringUtils.isBlank(data.getRefineWgs84Logt())
+       if (data.getRefineWgs84Lat().isBlank()
+           || data.getRefineWgs84Logt().isBlank()
            || "폐업".equals(data.getBsnStateNm())) {
          continue;
        }
