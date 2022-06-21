@@ -13,14 +13,12 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.stream.Stream;
 
 @Slf4j
 @Component
@@ -45,26 +43,18 @@ public class DataCreator {
     }
 
     private void laundryDataCreate(String rawDataFilePath) throws IOException {
-        StringBuilder builder = new StringBuilder();
-        try (Stream<String> stream = Files.lines(Paths.get(rawDataFilePath), StandardCharsets.UTF_8)) {
-            stream.forEach(builder::append);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        String fileContent = builder.toString();
-
-        OpenLaundryData[] openLaundryDatas = mapper.readValue(fileContent, OpenLaundryData[].class);
+        String fileContent = Files.readString(Paths.get(rawDataFilePath));
+        OpenLaundryData[] openLaundryDataList = mapper.readValue(fileContent, OpenLaundryData[].class);
 
         String query = """
                 INSERT INTO laundry (name, jibun_address, doro_address, latitude, longitude, partnership)
                 values (?, ?, ?, ?, ?, ?)
                 """;
 
-        query(openLaundryDatas, query);
+        query(openLaundryDataList, query);
     }
 
-    private void query(OpenLaundryData[] openLaundryDatas, String query) {
+    private void query(OpenLaundryData[] openLaundryDataList, String query) {
         try {
             String url = "jdbc:h2:mem:test;MODE=MYSQL;DATABASE_TO_LOWER=TRUE";
             String user = "sa";
@@ -72,7 +62,7 @@ public class DataCreator {
             Connection con = DriverManager.getConnection(url, user, password);
             PreparedStatement statement = con.prepareStatement(query);
 
-            for (OpenLaundryData data : openLaundryDatas) {
+            for (OpenLaundryData data : openLaundryDataList) {
                 if (data.getRefineWgs84Lat().isBlank()
                         || data.getRefineWgs84Logt().isBlank()
                         || "폐업".equals(data.getBsnStateNm())) {
