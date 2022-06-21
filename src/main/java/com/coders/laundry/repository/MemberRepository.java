@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 @Mapper
 @Repository
 public interface MemberRepository {
-    MemberEntity selectById(int id);
+    MemberEntity selectById(int memberId);
 }
