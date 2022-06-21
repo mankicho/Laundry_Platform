@@ -5,8 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -25,16 +27,20 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class DataCreator {
 
+    @Value("${data.laundry}")
+    private Resource[] rawLaundryDataList;
+
     @Autowired
     private final ObjectMapper mapper;
 
     @EventListener
     public void onApplicationEvent(ContextRefreshedEvent event) {
-        try {
-            laundryDataCreate("src/main/resources/db/h2/file/laundry.json");
-            laundryDataCreate("src/main/resources/db/h2/file/laundry2.json");
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
+        for (Resource r : rawLaundryDataList) {
+            try {
+                laundryDataCreate(r.getFile().getPath());
+            } catch (IOException e) {
+                log.error(e.getMessage(), e);
+            }
         }
     }
 
