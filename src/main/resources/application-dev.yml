@@ -5,8 +5,8 @@ spring:
     username: sa
     password:
     sql-script-encoding: UTF-8
-    schema: classpath:db/h2/${spring.profiles.active}/schema.sql
-    data: classpath:db/h2/${spring.profiles.active}/data.sql
+    schema: classpath:db/h2/${spring.profiles.active}/schema*.sql
+    data: classpath:db/h2/${spring.profiles.active}/data*.sql
   h2:
     console:
       enabled: true
