@@ -6,6 +6,8 @@ DROP TABLE IF EXISTS review;
 DROP TABLE IF EXISTS category;
 DROP TABLE IF EXISTS laundry_visit_history;
 DROP TABLE IF EXISTS laundry_like;
+DROP TABLE IF EXISTS facility;
+DROP TABLE IF EXISTS facility_holding;
 
 CREATE TABLE member (
        PRIMARY KEY (member_id),
