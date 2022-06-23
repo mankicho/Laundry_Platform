@@ -22,7 +22,7 @@
                doro_address, doro_address_detail,
                latitude, longitude, partnership
           FROM laundry
-         WHERE laundry_id = ${laundryId};
+         WHERE laundry_id = #{laundryId};
     </select>
 
     <update id="update"
@@ -46,7 +46,7 @@
             parameterType="int">
         DELETE
           FROM laundry
-         WHERE laundry_id = ${laundryId}
+         WHERE laundry_id = #{laundryId}
     </delete>
 
     <select id="selectAll" resultType="LaundryEntity">
