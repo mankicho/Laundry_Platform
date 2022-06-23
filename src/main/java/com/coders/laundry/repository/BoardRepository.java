@@ -13,5 +13,9 @@ import java.util.List;
 public interface BoardRepository {
     List<CategoryEntity> categoryList();
     List<PostEntity> selectHotPost();
-    //List<PostEntity> selectSpecificCategoryPost(int categoryId);
+    List<PostEntity> selectSpecificCategoryPost(int categoryId);
+    int postEnroll(PostEntity post);
+    PostEntity selectById(int postId);
+    int postUpdate(PostEntity post);
+    int postDelete(int postId);
 }
