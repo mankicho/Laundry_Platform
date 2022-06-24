@@ -9,7 +9,7 @@
     </select>
 
     <!-- 게시판별 인기 게시글 조회 -->
-    <select id="selectHotPost"
+    <select id="selectHotPosts"
             resultType="PostEntity">
         SELECT post_id, category_id, writer, title, contents, create_date, like_num
           FROM post
@@ -25,7 +25,7 @@
     </select>
 
     <!-- 특정 게시판의 게시글 조회 -->
-    <select id="selectSpecificCategoryPost"
+    <select id="selectSpecificCategoryPosts"
             parameterType="int"
             resultType="PostEntity">
         SELECT post_id, writer, title, contents,create_date, like_num
@@ -36,7 +36,7 @@
     </select>
 
     <!-- 게시글 등록 -->
-    <insert id="postEnroll"
+    <insert id="writePost"
             parameterType="PostEntity"
             useGeneratedKeys="true"
             keyProperty="postId"
@@ -53,7 +53,7 @@
          WHERE post_id = #{postId}
     </select>
 
-    <update id="postUpdate"
+    <update id="updatePost"
             parameterType="PostEntity"
             useGeneratedKeys="true"
             keyProperty="postId"
@@ -65,7 +65,7 @@
          WHERE post_id = #{postId}
     </update>
 
-    <delete id="postDelete"
+    <delete id="deletePost"
             parameterType="int">
         DELETE
           FROM post

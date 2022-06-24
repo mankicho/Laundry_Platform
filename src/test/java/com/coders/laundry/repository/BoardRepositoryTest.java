@@ -19,14 +19,23 @@ public class BoardRepositoryTest {
     private BoardRepository boardRepository;
 
     @Test
-    void categoryList(){
+    void categoryList() {
         List<CategoryEntity> result = boardRepository.categoryList();
         assertNotNull(result);
     }
 
     @Test
-    void init(){
-        // insert
+    void selectHotPosts() {
+        // todo.
+    }
+
+    @Test
+    void selectSpecificCategoryPosts() {
+        // todo.
+    }
+
+    @Test
+    void writePost() {
         // Arrange
         PostEntity expected = PostEntity.builder()
                 .categoryId(1)
@@ -36,43 +45,81 @@ public class BoardRepositoryTest {
                 .build();
 
         // Act
-        int result = boardRepository.postEnroll(expected);
+        int result = boardRepository.writePost(expected);
 
         // Assert
         assertEquals(1, result);
 
-        // selectById
+        int generatedPostId = expected.getPostId();
+        PostEntity actual = boardRepository.selectById(generatedPostId);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void selectById() {
+        // Arrange
+        PostEntity post = PostEntity.builder()
+                .categoryId(1)
+                .writer(1)
+                .title("first post")
+                .contents("first contents")
+                .build();
+        int writeCount = boardRepository.writePost(post);
+        assertEquals(1, writeCount);
+        int generatedPostId = post.getPostId();
+
         // Act
-        PostEntity selected = boardRepository.selectById(1);
-        // 아직 데이터가 없어 새로 생성되는 데이터의 id는 1로 시작된다.
-        // builder로 생성한 객체는 default값이 null로 표기되어 get메서드가 적용되지 않아서 위와같이 작성
+        PostEntity selected = boardRepository.selectById(generatedPostId);
 
         // Assert
         assertEquals(1, selected.getPostId());
-        assertEquals(1,selected.getCategoryId());
+        assertEquals(1, selected.getCategoryId());
         assertEquals(1, selected.getWriter());
-        assertEquals("first post",selected.getTitle());
+        assertEquals("first post", selected.getTitle());
         assertEquals("first contents", selected.getContents());
+    }
 
-        // update
+    @Test
+    void updatePost() {
         // Arrange
-        PostEntity post = boardRepository.selectById(1);
-        post.setTitle("update post");
+        PostEntity post = PostEntity.builder()
+                .categoryId(1)
+                .writer(1)
+                .title("first post")
+                .contents("first contents")
+                .build();
+        post.setTitle("update title");
         post.setContents("update contents");
 
         // Act
-        result = boardRepository.postUpdate(post);
+        int result = boardRepository.updatePost(post);
 
         // Assert
         assertEquals(1, result);
+        assertEquals("update title", boardRepository.selectById(1).getTitle());
+        assertEquals("update contents", boardRepository.selectById(1).getContents());
+    }
 
-        // delete
+    @Test
+    void deletePost() {
+        // Arrange
+        PostEntity post = PostEntity.builder()
+                .categoryId(1)
+                .writer(1)
+                .title("temp post")
+                .contents("temp contents")
+                .build();
+        int writeCount = boardRepository.writePost(post);
+        assertEquals(1, writeCount);
+
+        int generatedPostId = post.getPostId();
+
         // Act
-        result = boardRepository.postDelete(1);
+        int result = boardRepository.deletePost(generatedPostId);
 
         // Assert
         assertEquals(1, result);
-        PostEntity deleted = boardRepository.selectById(1);
+        PostEntity deleted = boardRepository.selectById(generatedPostId);
         assertNull(deleted);
     }
 }
