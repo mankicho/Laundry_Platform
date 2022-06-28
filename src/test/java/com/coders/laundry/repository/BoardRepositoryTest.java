@@ -52,7 +52,13 @@ public class BoardRepositoryTest {
 
         int generatedPostId = expected.getPostId();
         PostEntity actual = boardRepository.selectById(generatedPostId);
-        assertEquals(expected, actual);
+        assertEquals(expected.getCategoryId(), actual.getCategoryId());
+        assertEquals(expected.getWriter(), actual.getWriter());
+        assertEquals(expected.getTitle(), actual.getTitle());
+        assertEquals(expected.getContents(), actual.getContents());
+        assertNotNull(actual.getCreateDate());
+        assertEquals(0, actual.getLikeNum());
+        assertNull(actual.getUpdateDate());
     }
 
     @Test
@@ -72,11 +78,11 @@ public class BoardRepositoryTest {
         PostEntity selected = boardRepository.selectById(generatedPostId);
 
         // Assert
-        assertEquals(1, selected.getPostId());
-        assertEquals(1, selected.getCategoryId());
-        assertEquals(1, selected.getWriter());
-        assertEquals("first post", selected.getTitle());
-        assertEquals("first contents", selected.getContents());
+        assertEquals(post.getPostId(), selected.getPostId());
+        assertEquals(post.getCategoryId(), selected.getCategoryId());
+        assertEquals(post.getWriter(), selected.getWriter());
+        assertEquals(post.getTitle(), selected.getTitle());
+        assertEquals(post.getContents(), selected.getContents());
     }
 
     @Test
@@ -88,16 +94,18 @@ public class BoardRepositoryTest {
                 .title("first post")
                 .contents("first contents")
                 .build();
+        int result = boardRepository.writePost(post);
+        assertEquals(1, result);
         post.setTitle("update title");
         post.setContents("update contents");
 
         // Act
-        int result = boardRepository.updatePost(post);
+        result = boardRepository.updatePost(post);
 
         // Assert
         assertEquals(1, result);
-        assertEquals("update title", boardRepository.selectById(1).getTitle());
-        assertEquals("update contents", boardRepository.selectById(1).getContents());
+        assertEquals("update title", post.getTitle());
+        assertEquals("update contents", post.getContents());
     }
 
     @Test
