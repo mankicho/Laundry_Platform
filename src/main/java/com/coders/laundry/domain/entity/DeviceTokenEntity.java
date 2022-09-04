@@ -1,5 +1,6 @@
 package com.coders.laundry.domain.entity;
 
+import com.coders.laundry.domain.enums.DeviceType;
 import java.time.Instant;
 import lombok.Data;
 
@@ -13,8 +14,4 @@ public class DeviceTokenEntity {
     private DeviceType type;
 
     private Instant createdAt;
-
-    public enum DeviceType {
-        Android, Apple
-    }
 }

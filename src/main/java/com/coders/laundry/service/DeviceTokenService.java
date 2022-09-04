@@ -1,6 +1,5 @@
 package com.coders.laundry.service;
 
-import com.coders.laundry.domain.entity.DeviceTokenEntity;
 import com.coders.laundry.repository.DeviceTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

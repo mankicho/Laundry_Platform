@@ -2,6 +2,7 @@ package com.coders.laundry.controller;
 
 import com.coders.laundry.domain.dto.DeviceTokenSaveRequestDTO;
 import com.coders.laundry.service.DeviceTokenService;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,7 +24,7 @@ public class DeviceTokenController {
     // TODO: 응답모델 적절하게 설계
     @PostMapping
     public HttpStatus save(
-        @RequestBody DeviceTokenSaveRequestDTO requestDTO
+        @RequestBody @Valid DeviceTokenSaveRequestDTO requestDTO
     ) {
         int savedRow =  service.save(
             requestDTO.getMemberId(),

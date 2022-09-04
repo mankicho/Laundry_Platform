@@ -1,7 +1,6 @@
 package com.coders.laundry.service.notify;
 
 import com.coders.laundry.domain.entity.DeviceTokenEntity;
-import com.coders.laundry.domain.entity.MemberEntity;
 import com.coders.laundry.repository.DeviceTokenRepository;
 import com.coders.laundry.scheduler.NotificationScheduler;
 import com.google.auth.oauth2.GoogleCredentials;
@@ -12,8 +11,10 @@ import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
-import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.concurrent.CompletableFuture;
 import javax.annotation.PostConstruct;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +26,18 @@ import org.springframework.stereotype.Service;
 @Log4j2
 public class FcmNotificationService implements NotificationService {
 
+    private static final String TITLE = "Laundry";
+    private static final String START_MESSAGE = "빨래가 시작되었습니다.";
+    private static final String IN_PROGRESS_MESSAGE = "빨래완료 10분전입니다.";
+    private static final String COMPLETE_MESSAGE = "빨래가 완료되었습니다.";
+
+    private static final long TEN_MINUTE = 1000 * 10L;
+
     private final DeviceTokenRepository deviceTokenRepository;
     private final NotificationScheduler scheduler;
     private final String FCM_PRIVATE_KEY_PATH;
+
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     @Autowired
     public FcmNotificationService(
@@ -64,28 +74,40 @@ public class FcmNotificationService implements NotificationService {
     }
 
     @Override
-    public void send(int memberId, String message) {
+    public void send(int memberId, long totalTime) {
         DeviceTokenEntity deviceTokenEntity = deviceTokenRepository.selectByMemberId(memberId);
 
-        scheduler.submit(() -> {
-                Message m = Message.builder()
-                    .putData("time", LocalDateTime.now().toString())
-                    .setNotification(
-                        Notification.builder()
-                            .setTitle("testTitle")
-                            .setBody(message)
-                        .build())
-                    .setToken(deviceTokenEntity.getToken())
-                    .build();
+        Message startMessage = buildMessage(START_MESSAGE, deviceTokenEntity.getToken());
+        Message inProgressMessage = buildMessage(IN_PROGRESS_MESSAGE, deviceTokenEntity.getToken());
+        Message completeMessage = buildMessage(COMPLETE_MESSAGE, deviceTokenEntity.getToken());
 
+        reserveSendMessage(startMessage, Duration.ZERO);
+        reserveSendMessage(inProgressMessage, Duration.ofMillis(totalTime - TEN_MINUTE));
+        reserveSendMessage(completeMessage, Duration.ofMillis(totalTime));
+    }
+
+    private CompletableFuture<Void> reserveSendMessage(Message message, Duration duration) {
+        return scheduler.submit(() -> {
                 try {
-                    String response = FirebaseMessaging.getInstance().send(m);
-                    System.out.println("Successfully sent message: " + response);
+                    String response = FirebaseMessaging.getInstance().send(message);
+                    log.info("Successfully sent message: {}", message);
                 } catch (FirebaseMessagingException e) {
                     log.error(e);
                 }
             },
-            Duration.ofMillis(1000L)
+            duration
         );
+    }
+
+    private Message buildMessage(String message, String token) {
+        return Message.builder()
+            .putData("time", dateFormat.format(new Date()))
+            .setNotification(
+                Notification.builder()
+                    .setTitle(TITLE)
+                    .setBody(message)
+                    .build())
+            .setToken(token)
+            .build();
     }
 }
