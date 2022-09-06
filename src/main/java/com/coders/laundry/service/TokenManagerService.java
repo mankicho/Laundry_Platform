@@ -1,6 +1,13 @@
 package com.coders.laundry.service;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.Data;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
 
 /**
  * 해당 서비스는 Stubbing을 위해 만들어졌습니다.
@@ -8,6 +15,13 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class TokenManagerService {
+
+    @Value("${jwt.secretKey}")
+    private String secretKey;
+    @Value("${jwt.accessValidTime}")
+    private long tokenValidTime;
+    @Value("${jwt.refreshValidTime}")
+    private long refreshTokenValidTime;
 
     public boolean verify(String token){
         // TODO implement
@@ -17,5 +31,34 @@ public class TokenManagerService {
     public int findMemberId(String token) {
         // TODO implement
         return 1;
+    }
+
+    public String createToken(int memberId) {
+
+        String id = Integer.toString(memberId);
+        Claims claims = Jwts.claims().setSubject(id);
+        Date now = new Date();
+
+        return Jwts.builder()
+                .setHeaderParam("typ","JWT")
+                .setHeaderParam("alg","HS256")
+                .setClaims(claims)
+                .setIssuedAt(now)
+                .setExpiration(new Date(now.getTime() + tokenValidTime))
+                .signWith(SignatureAlgorithm.HS256, secretKey.getBytes())
+                .compact();
+
+    }
+
+    public String createRefreshToken(){
+
+        Date now = new Date();
+
+        return Jwts.builder()
+                .setIssuedAt(now)
+                .setExpiration(new Date(now.getTime() + refreshTokenValidTime))
+                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .compact();
+
     }
 }
