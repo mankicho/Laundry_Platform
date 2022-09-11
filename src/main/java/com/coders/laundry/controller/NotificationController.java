@@ -18,9 +18,9 @@ public class NotificationController {
     @GetMapping(value = "/fcm")
     public HttpStatus sendPushMessage(
         @RequestParam("memberId") int memberId,
-        @RequestParam("totalTime") long totalTime
+        @RequestParam("totalTime") long totalTimeInMillis
     ) {
-        service.send(memberId, totalTime);
+        service.send(memberId, totalTimeInMillis);
         return HttpStatus.ACCEPTED;
     }
 }

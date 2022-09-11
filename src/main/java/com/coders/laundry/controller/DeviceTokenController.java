@@ -2,8 +2,9 @@ package com.coders.laundry.controller;
 
 import com.coders.laundry.domain.dto.DeviceTokenSaveRequestDTO;
 import com.coders.laundry.service.DeviceTokenService;
+import com.coders.laundry.view.IntegerView;
 import javax.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,18 +13,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/device-token")
+@RequiredArgsConstructor
 public class DeviceTokenController {
 
     private final DeviceTokenService service;
 
-    @Autowired
-    public DeviceTokenController(DeviceTokenService deviceTokenService) {
-        this.service = deviceTokenService;
-    }
-
-    // TODO: 응답모델 적절하게 설계
     @PostMapping
-    public HttpStatus save(
+    public IntegerView save(
         @RequestBody @Valid DeviceTokenSaveRequestDTO requestDTO
     ) {
         int savedRow =  service.save(
@@ -32,6 +28,6 @@ public class DeviceTokenController {
             requestDTO.getDeviceType()
         );
 
-        return savedRow > 0 ? HttpStatus.OK : HttpStatus.INTERNAL_SERVER_ERROR;
+        return new IntegerView(savedRow);
     }
 }

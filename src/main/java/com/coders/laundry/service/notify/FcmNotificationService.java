@@ -16,14 +16,15 @@ import java.time.Duration;
 import java.util.Date;
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileUrlResource;
 import org.springframework.stereotype.Service;
 
 @Service
 @Log4j2
+@RequiredArgsConstructor
 public class FcmNotificationService implements NotificationService {
 
     private static final String TITLE = "Laundry";
@@ -31,30 +32,21 @@ public class FcmNotificationService implements NotificationService {
     private static final String IN_PROGRESS_MESSAGE = "빨래완료 10분전입니다.";
     private static final String COMPLETE_MESSAGE = "빨래가 완료되었습니다.";
 
-    private static final long TEN_MINUTE = 1000 * 10L;
+    private static final long TEN_MINUTE = 1000 * 60 * 10L;
 
     private final DeviceTokenRepository deviceTokenRepository;
     private final NotificationScheduler scheduler;
-    private final String FCM_PRIVATE_KEY_PATH;
 
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    @Autowired
-    public FcmNotificationService(
-        DeviceTokenRepository deviceTokenRepository,
-        NotificationScheduler scheduler,
-        @Value("${fcm.path}") String path
-    ) {
-        this.deviceTokenRepository = deviceTokenRepository;
-        this.scheduler = scheduler;
-        this.FCM_PRIVATE_KEY_PATH = path;
-    }
+    @Value("${fcm.path}")
+    private String FCM_PRIVATE_KEY_PATH;
 
     @PostConstruct
     public void init() {
         // TODO: 파일경로를 선언해주는건 보안적으로좋지않음. 환경변수로 export 하여 접근하도록 할것.
         try {
-            FirebaseOptions options = new FirebaseOptions.Builder()
+            FirebaseOptions options = FirebaseOptions.builder()
                 .setCredentials(GoogleCredentials
                     .fromStream(new FileUrlResource(FCM_PRIVATE_KEY_PATH).getInputStream())
                     .createScoped(
@@ -74,7 +66,7 @@ public class FcmNotificationService implements NotificationService {
     }
 
     @Override
-    public void send(int memberId, long totalTime) {
+    public void send(int memberId, long totalTimeInMillis) {
         DeviceTokenEntity deviceTokenEntity = deviceTokenRepository.selectByMemberId(memberId);
 
         Message startMessage = buildMessage(START_MESSAGE, deviceTokenEntity.getToken());
@@ -82,14 +74,14 @@ public class FcmNotificationService implements NotificationService {
         Message completeMessage = buildMessage(COMPLETE_MESSAGE, deviceTokenEntity.getToken());
 
         reserveSendMessage(startMessage, Duration.ZERO);
-        reserveSendMessage(inProgressMessage, Duration.ofMillis(totalTime - TEN_MINUTE));
-        reserveSendMessage(completeMessage, Duration.ofMillis(totalTime));
+        reserveSendMessage(inProgressMessage, Duration.ofMillis(totalTimeInMillis - TEN_MINUTE));
+        reserveSendMessage(completeMessage, Duration.ofMillis(totalTimeInMillis));
     }
 
     private CompletableFuture<Void> reserveSendMessage(Message message, Duration duration) {
         return scheduler.submit(() -> {
                 try {
-                    String response = FirebaseMessaging.getInstance().send(message);
+                    FirebaseMessaging.getInstance().send(message);
                     log.info("Successfully sent message: {}", message);
                 } catch (FirebaseMessagingException e) {
                     log.error(e);
@@ -99,7 +91,7 @@ public class FcmNotificationService implements NotificationService {
         );
     }
 
-    private Message buildMessage(String message, String token) {
+    private Message buildMessage(String message, String deviceToken) {
         return Message.builder()
             .putData("time", dateFormat.format(new Date()))
             .setNotification(
@@ -107,7 +99,7 @@ public class FcmNotificationService implements NotificationService {
                     .setTitle(TITLE)
                     .setBody(message)
                     .build())
-            .setToken(token)
+            .setToken(deviceToken)
             .build();
     }
 }
