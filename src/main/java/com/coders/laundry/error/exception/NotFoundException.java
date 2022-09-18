@@ -1,6 +1,7 @@
 package com.coders.laundry.error.exception;
 
 import com.coders.laundry.error.ErrorResponse;
+import org.springframework.http.HttpStatus;
 
 public class NotFoundException extends BaseException {
 
@@ -12,6 +13,11 @@ public class NotFoundException extends BaseException {
     super(message);
     this.clazz = clazz;
     this.input = input;
+  }
+
+  @Override
+  public HttpStatus getStatus() {
+    return HttpStatus.NOT_FOUND;
   }
 
   @Override

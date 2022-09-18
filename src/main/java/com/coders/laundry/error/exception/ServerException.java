@@ -3,6 +3,7 @@ package com.coders.laundry.error.exception;
 import com.coders.laundry.error.Detail;
 import com.coders.laundry.error.ErrorResponse;
 import java.io.Serial;
+import org.springframework.http.HttpStatus;
 
 public class ServerException extends BaseException {
 
@@ -18,6 +19,11 @@ public class ServerException extends BaseException {
 
   public ServerException(String message) {
     this(message, null);
+  }
+
+  @Override
+  public HttpStatus getStatus() {
+    return HttpStatus.INTERNAL_SERVER_ERROR;
   }
 
   @Override

@@ -14,6 +14,6 @@ public class BaseExceptionHandler {
   @ExceptionHandler(BaseException.class)
   @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
   public ResponseEntity<ErrorResponse> handleBaseException(BaseException e) {
-    return ResponseEntity.status(BaseException.DEFAULT_STATUS).body(e.buildErrorResponse());
+    return ResponseEntity.status(e.getStatus()).body(e.buildErrorResponse());
   }
 }

@@ -10,11 +10,11 @@ public abstract class BaseException extends RuntimeException implements ErrorBui
   @Serial
   private static final long serialVersionUID = 181755367808226645L;
 
-  public static final HttpStatus DEFAULT_STATUS = HttpStatus.UNPROCESSABLE_ENTITY;
-
   public BaseException(String message) {
     super(message);
   }
+
+  public abstract HttpStatus getStatus();
 
   @Override
   public ErrorResponse buildErrorResponse() {
